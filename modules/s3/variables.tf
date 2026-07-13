@@ -15,8 +15,3 @@ variable "log_bucket_name" {
   type        = string
 }
 
-variable "bucket_name" {
-  description = "Nombre del bucket principal"
-  type        = string
-}
-
