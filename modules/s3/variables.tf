@@ -14,3 +14,9 @@ variable "log_bucket_name" {
   description = "Nombre del bucket destino para almacenar logs de acceso"
   type        = string
 }
+
+variable "bucket_name" {
+  description = "Nombre del bucket principal"
+  type        = string
+}
+

@@ -47,7 +47,7 @@ resource "aws_s3_bucket_logging" "this" {
   target_prefix = "logs/"
 }
 
-# Ciclo de vida mínimo
+# Ciclo de vida mínimo (con filtro obligatorio)
 resource "aws_s3_bucket_lifecycle_configuration" "this" {
   bucket = aws_s3_bucket.this.id
 
@@ -56,7 +56,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
     status = "Enabled"
 
     filter {
-      prefix = "" 
+      prefix = "" # aplica a todos los objetos
     }
 
     expiration {
