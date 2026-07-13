@@ -10,6 +10,10 @@
 
 
 
+**!\[directorio](imagenes/directorio.png)**
+
+
+
 **infra/**
 
 **├── main.tf              # Invoca módulos y define recursos globales**
@@ -24,6 +28,10 @@
 
 
 
+**!\[modulos](imagenes/modulos.png)**
+
+
+
 **⚙️ Módulos incluidos**
 
 **VPC: Red principal con subnets públicas.**
@@ -31,6 +39,10 @@
 
 
 **EKS: Cluster Kubernetes administrado en AWS.**
+
+
+
+**!\[cluster](imagenes/cluster.png)**
 
 
 
@@ -88,7 +100,7 @@
 
 
 
-
+**!\[grupo-seguridad](imagenes/grupo-seguridad.png)**
 
 
 
@@ -122,19 +134,39 @@
 
 
 
+**!\[terraform-plan](imagenes/terraform-plan.png)**
+
+
+
 **bash**
 
 **terraform apply -var-file="terraform.tfvars"**
 
 
 
+**!\[apply](imagenes/apply.png)**
+
+
+
+
+
 **Seguridad y calidad**
+
+
+
+**!\[tflint](imagenes/tflint.png)**
+
+
 
 **Variables sensibles (db\_password) se manejan con sensitive = true.**
 
 
 
 **Validación con Checkov y TFLint en el pipeline CI/CD.**
+
+
+
+**!\[checkov](imagenes/checkov.png)**
 
 
 
@@ -147,6 +179,12 @@
 
 
 **Outputs principales**
+
+
+
+**!\[apply-add](imagenes/apply-add.png)**
+
+
 
 **vpc\_id → ID de la VPC creada.**
 
@@ -170,5 +208,31 @@
 
 
 
-**.**
+**!\[actions](imagenes/actions.png)**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
