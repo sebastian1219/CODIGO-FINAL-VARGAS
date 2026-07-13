@@ -9,7 +9,7 @@ terraform {
   }
 }
 
-# S3 Bucket
+# S3 Bucket principal
 resource "aws_s3_bucket" "this" {
   bucket = var.bucket_name
 
@@ -29,13 +29,41 @@ resource "aws_s3_bucket_public_access_block" "this" {
   restrict_public_buckets = true
 }
 
+# Clave KMS para cifrado de S3
+resource "aws_kms_key" "s3" {
+  description             = "KMS key for S3 bucket ${var.bucket_name}"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Id": "s3-key-policy",
+  "Statement": [
+    {
+      "Sid": "AllowRootAccount",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+      },
+      "Action": "kms:*",
+      "Resource": "*"
+    }
+  ]
+}
+POLICY
+}
+
+data "aws_caller_identity" "current" {}
+
 # Cifrado en reposo con KMS por defecto
 resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
   bucket = aws_s3_bucket.this.id
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "aws:kms"
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = aws_kms_key.s3.arn
     }
   }
 }
@@ -47,16 +75,55 @@ resource "aws_s3_bucket_logging" "this" {
   target_prefix = "logs/"
 }
 
-# Ciclo de vida mínimo (con filtro obligatorio)
+# Versionado obligatorio
+resource "aws_s3_bucket_versioning" "this" {
+  bucket = aws_s3_bucket.this.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+# Ciclo de vida mínimo (expiración + abortar cargas incompletas)
 resource "aws_s3_bucket_lifecycle_configuration" "this" {
   bucket = aws_s3_bucket.this.id
+
   rule {
     id     = "expire-old-objects"
     status = "Enabled"
+
     filter { prefix = "" }
+
     expiration { days = 30 }
+
     abort_incomplete_multipart_upload {
       days_after_initiation = 7
     }
   }
 }
+
+# Replicación entre regiones (requiere bucket destino y rol IAM)
+resource "aws_s3_bucket_replication_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
+  role   = aws_iam_role.replication.arn
+
+  rule {
+    id     = "replication"
+    status = "Enabled"
+
+    destination {
+      bucket        = "arn:aws:s3:::${var.replication_bucket}"
+      storage_class = "STANDARD"
+    }
+  }
+}
+
+# Notificaciones de eventos (ejemplo con SNS)
+resource "aws_s3_bucket_notification" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  topic {
+    topic_arn = aws_sns_topic.s3_events.arn
+    events    = ["s3:ObjectCreated:*"]
+  }
+}
+

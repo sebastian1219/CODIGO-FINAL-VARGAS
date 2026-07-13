@@ -65,3 +65,21 @@ resource "aws_kms_key" "rds" {
   deletion_window_in_days = 7
   enable_key_rotation     = true
 }
+
+resource "aws_backup_plan" "rds" {
+  name = "${var.environment}-rds-backup"
+
+  rule {
+    rule_name         = "daily-backup"
+    target_vault_name = aws_backup_vault.rds.name
+    schedule          = "cron(0 12 * * ? *)"
+    lifecycle {
+      delete_after = 30
+    }
+  }
+}
+
+resource "aws_backup_vault" "rds" {
+  name        = "${var.environment}-rds-vault"
+  kms_key_arn = aws_kms_key.rds.arn
+}

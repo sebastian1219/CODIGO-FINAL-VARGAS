@@ -53,7 +53,27 @@ resource "aws_kms_key" "logs" {
   description             = "KMS key for VPC Flow Logs"
   deletion_window_in_days = 7
   enable_key_rotation     = true
+
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Id": "vpc-logs-key-policy",
+  "Statement": [
+    {
+      "Sid": "AllowRootAccount",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+      },
+      "Action": "kms:*",
+      "Resource": "*"
+    }
+  ]
 }
+POLICY
+}
+
+data "aws_caller_identity" "current" {}
 
 # Flow Logs (CloudWatch Logs con cifrado y retención)
 resource "aws_cloudwatch_log_group" "vpc_logs" {
