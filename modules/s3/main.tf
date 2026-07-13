@@ -1,3 +1,15 @@
+terraform {
+  required_version = ">= 1.5.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+
 # 1. El bucket principal
 resource "aws_s3_bucket" "this" {
   bucket = var.bucket_name
