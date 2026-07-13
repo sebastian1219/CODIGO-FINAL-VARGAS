@@ -54,5 +54,6 @@ module "s3" {
   bucket_name     = var.bucket_name
   environment     = var.environment
   log_bucket_name = var.log_bucket_name
+  replication_bucket = "mi-bucket-replica"
 }
 
