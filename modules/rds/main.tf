@@ -41,20 +41,17 @@ resource "aws_rds_cluster" "this" {
   }
 }
 
-# Aurora Instance
+# Aurora Instance (solo una vez)
 resource "aws_rds_cluster_instance" "this" {
   identifier         = "${var.environment}-aurora-instance"
   cluster_identifier = aws_rds_cluster.this.id
   instance_class     = var.instance_class
   engine             = "aurora-postgresql"
 
-  # Correcciones válidas
   auto_minor_version_upgrade      = true
   performance_insights_enabled    = true
   performance_insights_kms_key_id = aws_kms_key.rds.arn
   monitoring_interval             = 60
-  deletion_protection             = true
-  copy_tags_to_snapshot           = true
 
   tags = {
     Name        = "${var.environment}-aurora-instance"
@@ -68,4 +65,3 @@ resource "aws_kms_key" "rds" {
   deletion_window_in_days = 7
   enable_key_rotation     = true
 }
-
