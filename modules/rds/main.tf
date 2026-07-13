@@ -32,6 +32,7 @@ resource "aws_rds_cluster" "this" {
   vpc_security_group_ids  = var.sg_ids   # SG de la misma VPC que subnet_ids
   skip_final_snapshot     = true
   enabled_cloudwatch_logs_exports = ["postgresql", "error", "general", "slowquery"]
+  kms_key_id                      = aws_kms_key.rds.arn
 }
 
 
@@ -57,6 +58,8 @@ resource "aws_rds_cluster_instance" "this" {
   # Correcciones mínimas
   auto_minor_version_upgrade = true
   performance_insights_enabled = true
+  performance_insights_kms_key_id  = aws_kms_key.rds.arn
+  monitoring_interval              = 60
 
   tags = {
     Name        = "${var.environment}-aurora-instance"
