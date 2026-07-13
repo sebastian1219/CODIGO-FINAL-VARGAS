@@ -15,3 +15,7 @@ variable "log_bucket_name" {
   type        = string
 }
 
+variable "replication_bucket" {
+  description = "Nombre del bucket destino para replicación cross-region"
+  type        = string
+}
