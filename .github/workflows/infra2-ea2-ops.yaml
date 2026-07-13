@@ -29,9 +29,6 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      - name: Show Terraform Plan
-        run: terraform show tfplan
-
 
       # 5. Instalar TFLint manualmente
       - name: Install TFLint
