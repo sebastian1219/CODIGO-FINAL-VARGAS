@@ -9,7 +9,6 @@ terraform {
   }
 }
 
-
 # Subnet Group para Aurora
 resource "aws_db_subnet_group" "this" {
   name       = var.subnet_group
@@ -29,25 +28,18 @@ resource "aws_rds_cluster" "this" {
   master_username         = var.db_username
   master_password         = var.db_password
   db_subnet_group_name    = aws_db_subnet_group.this.name
-  vpc_security_group_ids  = var.sg_ids   # SG de la misma VPC que subnet_ids
+  vpc_security_group_ids  = var.sg_ids
   skip_final_snapshot     = true
+
+  # Correcciones válidas
   enabled_cloudwatch_logs_exports = ["postgresql", "error", "general", "slowquery"]
-  kms_key_id              = aws_kms_key.rds.arn
-}
-
-
-  # Correcciones mínimas
-  iam_database_authentication_enabled = true
-  deletion_protection                 = true
-  storage_encrypted                   = true
-  copy_tags_to_snapshot               = true
+  kms_key_id                      = aws_kms_key.rds.arn
 
   tags = {
     Name        = "${var.environment}-aurora-cluster"
     Environment = var.environment
   }
 }
-
 
 # Aurora Instance
 resource "aws_rds_cluster_instance" "this" {
@@ -56,14 +48,24 @@ resource "aws_rds_cluster_instance" "this" {
   instance_class     = var.instance_class
   engine             = "aurora-postgresql"
 
-  # Correcciones mínimas
-  auto_minor_version_upgrade = true
-  performance_insights_enabled = true
-  performance_insights_kms_key_id  = aws_kms_key.rds.arn
-  monitoring_interval              = 60
+  # Correcciones válidas
+  auto_minor_version_upgrade      = true
+  performance_insights_enabled    = true
+  performance_insights_kms_key_id = aws_kms_key.rds.arn
+  monitoring_interval             = 60
+  deletion_protection             = true
+  copy_tags_to_snapshot           = true
 
   tags = {
     Name        = "${var.environment}-aurora-instance"
     Environment = var.environment
   }
 }
+
+# Clave KMS para RDS
+resource "aws_kms_key" "rds" {
+  description             = "KMS key for RDS cluster"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+}
+
