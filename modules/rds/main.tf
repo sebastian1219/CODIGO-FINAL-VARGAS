@@ -32,12 +32,19 @@ resource "aws_rds_cluster" "this" {
   skip_final_snapshot     = true
 
   # Correcciones de seguridad y cumplimiento
-  enabled_cloudwatch_logs_exports     = ["postgresql", "error", "general", "slowquery"]
   kms_key_id                          = aws_kms_key.rds.arn
   iam_database_authentication_enabled = true
   deletion_protection                 = true
   storage_encrypted                   = true
   copy_tags_to_snapshot               = true
+
+  # 🔽 Activación de logs en CloudWatch
+  enabled_cloudwatch_logs_exports = [
+    "postgresql",   # consultas de Postgres
+    "error",        # errores
+    "general",      # logs generales
+    "slowquery"     # consultas lentas
+  ]
 
   tags = {
     Name        = "${var.environment}-aurora-cluster"
