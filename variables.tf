@@ -93,7 +93,7 @@ variable "sg_ids" {
 variable "engine_version" {
   description = "Versión del motor Aurora PostgreSQL"
   type        = string
-  default     = "18.3"
+  default     = "15.3"
 }
 
 variable "instance_class" {
