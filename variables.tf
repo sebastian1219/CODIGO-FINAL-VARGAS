@@ -52,30 +52,6 @@ variable "kubernetes_version" {
   nullable    = false
 }
 
-# Variables de escalado de nodos (si mantienes node group)
-variable "node_desired_size" {
-  description = "Número deseado de nodos en el grupo"
-  type        = number
-  nullable    = false
-}
-
-variable "node_min_size" {
-  description = "Número mínimo de nodos en el grupo"
-  type        = number
-  nullable    = false
-}
-
-variable "node_max_size" {
-  description = "Número máximo de nodos en el grupo"
-  type        = number
-  nullable    = false
-}
-
-variable "node_instance_types" {
-  description = "Tipos de instancia para los nodos del cluster"
-  type        = list(string)
-  nullable    = false
-}
 
 # 🔽 Variables necesarias para el módulo RDS (Aurora)
 variable "db_username" {
