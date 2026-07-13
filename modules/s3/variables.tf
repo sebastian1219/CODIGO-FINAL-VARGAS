@@ -9,3 +9,8 @@ variable "environment" {
   type        = string
   nullable    = false
 }
+
+variable "log_bucket_name" {
+  description = "Nombre del bucket destino para almacenar logs de acceso"
+  type        = string
+}
