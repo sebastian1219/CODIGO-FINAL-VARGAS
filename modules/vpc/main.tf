@@ -48,7 +48,14 @@ resource "aws_default_security_group" "this" {
   }
 }
 
-# Flow Logs básicos (usa CloudWatch Logs)
+# Clave KMS para cifrar logs
+resource "aws_kms_key" "logs" {
+  description             = "KMS key for VPC Flow Logs"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+}
+
+# Flow Logs (CloudWatch Logs con cifrado y retención)
 resource "aws_cloudwatch_log_group" "vpc_logs" {
   name              = "/aws/vpc/${var.environment}-flow-logs"
   retention_in_days = 365
@@ -61,5 +68,4 @@ resource "aws_flow_log" "this" {
   traffic_type         = "ALL"
   vpc_id               = aws_vpc.this.id
 }
-
 
