@@ -43,6 +43,7 @@ module "rds" {
   sg_ids         = var.sg_ids  
   engine_version = var.engine_version
   instance_class = var.instance_class
+  backup_role_arn = var.backup_role_arn
 }
 
 
@@ -54,6 +55,6 @@ module "s3" {
   bucket_name     = var.bucket_name
   environment     = var.environment
   log_bucket_name = var.log_bucket_name
-  replication_bucket = "mi-bucket-replica"
+  replication_bucket = var.replication_bucket
 }
 

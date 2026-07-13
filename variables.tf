@@ -101,3 +101,16 @@ variable "instance_class" {
   type        = string
   default     = "db.t3.medium"
 }
+
+variable "replication_bucket" {
+  description = "Nombre del bucket destino para replicación cross-region de S3"
+  type        = string
+  nullable    = false
+}
+
+variable "backup_role_arn" {
+  description = "ARN del rol IAM usado por AWS Backup para gestionar respaldos del cluster RDS"
+  type        = string
+  nullable    = false
+}
+
