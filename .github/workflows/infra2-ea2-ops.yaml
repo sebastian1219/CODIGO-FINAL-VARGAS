@@ -29,6 +29,10 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
+      - name: Show Terraform Plan
+        run: terraform show tfplan
+
+
       # 5. Instalar TFLint manualmente
       - name: Install TFLint
         run: |
@@ -45,7 +49,7 @@ jobs:
 
       # 7. Generar plan (no aplica)
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: terraform plan -var-file="terraform.tfvars" -out=tfplan
 
       # 8. Guardar el plan como artefacto
       - name: Upload Plan
