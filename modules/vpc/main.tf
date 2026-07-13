@@ -9,7 +9,18 @@ terraform {
   }
 }
 
+terraform {
+  required_version = ">= 1.5.0"
 
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+# VPC principal
 resource "aws_vpc" "this" {
   cidr_block           = var.cidr_block
   enable_dns_support   = true
@@ -21,6 +32,7 @@ resource "aws_vpc" "this" {
   }
 }
 
+# Subnets públicas
 resource "aws_subnet" "public" {
   count                   = length(var.public_subnets)
   vpc_id                  = aws_vpc.this.id
@@ -33,3 +45,30 @@ resource "aws_subnet" "public" {
     Environment = var.environment
   }
 }
+
+# Grupo de seguridad por defecto (bloquea todo tráfico)
+resource "aws_default_security_group" "this" {
+  vpc_id = aws_vpc.this.id
+
+  ingress = []
+  egress  = []
+
+  tags = {
+    Name        = "${var.environment}-default-sg"
+    Environment = var.environment
+  }
+}
+
+# Flow Logs básicos (usa CloudWatch Logs)
+resource "aws_cloudwatch_log_group" "vpc_logs" {
+  name              = "/aws/vpc/${var.environment}-flow-logs"
+  retention_in_days = 7
+}
+
+resource "aws_flow_log" "this" {
+  log_destination      = aws_cloudwatch_log_group.vpc_logs.arn
+  log_destination_type = "cloud-watch-logs"
+  traffic_type         = "ALL"
+  vpc_id               = aws_vpc.this.id
+}
+

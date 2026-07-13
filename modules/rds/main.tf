@@ -32,6 +32,12 @@ resource "aws_rds_cluster" "this" {
   vpc_security_group_ids  = var.sg_ids   # SG de la misma VPC que subnet_ids
   skip_final_snapshot     = true
 
+  # Correcciones mínimas
+  iam_database_authentication_enabled = true
+  deletion_protection                 = true
+  storage_encrypted                   = true
+  copy_tags_to_snapshot               = true
+
   tags = {
     Name        = "${var.environment}-aurora-cluster"
     Environment = var.environment
@@ -44,6 +50,10 @@ resource "aws_rds_cluster_instance" "this" {
   cluster_identifier = aws_rds_cluster.this.id
   instance_class     = var.instance_class
   engine             = "aurora-postgresql"
+
+  # Correcciones mínimas
+  auto_minor_version_upgrade = true
+  performance_insights_enabled = true
 
   tags = {
     Name        = "${var.environment}-aurora-instance"
