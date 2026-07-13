@@ -50,8 +50,9 @@ module "rds" {
 
 # S3
 module "s3" {
-  source      = "./modules/s3"
-  bucket_name = var.bucket_name
-  environment = var.environment
+  source          = "./modules/s3"
+  bucket_name     = var.bucket_name
+  environment     = var.environment
+  log_bucket_name = var.log_bucket_name
 }
 
