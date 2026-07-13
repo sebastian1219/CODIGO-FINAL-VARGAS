@@ -31,9 +31,13 @@ resource "aws_rds_cluster" "this" {
   vpc_security_group_ids  = var.sg_ids
   skip_final_snapshot     = true
 
-  # Correcciones válidas
-  enabled_cloudwatch_logs_exports = ["postgresql", "error", "general", "slowquery"]
-  kms_key_id                      = aws_kms_key.rds.arn
+  # Correcciones de seguridad y cumplimiento
+  enabled_cloudwatch_logs_exports     = ["postgresql", "error", "general", "slowquery"]
+  kms_key_id                          = aws_kms_key.rds.arn
+  iam_database_authentication_enabled = true
+  deletion_protection                 = true
+  storage_encrypted                   = true
+  copy_tags_to_snapshot               = true
 
   tags = {
     Name        = "${var.environment}-aurora-cluster"
@@ -41,7 +45,7 @@ resource "aws_rds_cluster" "this" {
   }
 }
 
-# Aurora Instance (solo una vez)
+# Aurora Instance
 resource "aws_rds_cluster_instance" "this" {
   identifier         = "${var.environment}-aurora-instance"
   cluster_identifier = aws_rds_cluster.this.id
@@ -59,13 +63,40 @@ resource "aws_rds_cluster_instance" "this" {
   }
 }
 
-# Clave KMS para RDS
+# Clave KMS con política explícita
 resource "aws_kms_key" "rds" {
   description             = "KMS key for RDS cluster"
   deletion_window_in_days = 7
   enable_key_rotation     = true
+
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Id": "rds-key-policy",
+  "Statement": [
+    {
+      "Sid": "AllowRootAccount",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+      },
+      "Action": "kms:*",
+      "Resource": "*"
+    }
+  ]
+}
+POLICY
 }
 
+data "aws_caller_identity" "current" {}
+
+# Backup Vault
+resource "aws_backup_vault" "rds" {
+  name        = "${var.environment}-rds-vault"
+  kms_key_arn = aws_kms_key.rds.arn
+}
+
+# Backup Plan
 resource "aws_backup_plan" "rds" {
   name = "${var.environment}-rds-backup"
 
@@ -79,7 +110,11 @@ resource "aws_backup_plan" "rds" {
   }
 }
 
-resource "aws_backup_vault" "rds" {
-  name        = "${var.environment}-rds-vault"
-  kms_key_arn = aws_kms_key.rds.arn
+# Backup Selection
+resource "aws_backup_selection" "rds" {
+  name         = "${var.environment}-rds-selection"
+  iam_role_arn = var.backup_role_arn
+  plan_id      = aws_backup_plan.rds.id
+
+  resources = [aws_rds_cluster.this.arn]
 }

@@ -38,7 +38,7 @@ variable "environment" {
 variable "engine_version" {
   description = "Versión del motor Aurora PostgreSQL"
   type        = string
-  default     = "18.3"
+  default     = "15.3"
 }
 
 variable "instance_class" {
@@ -47,3 +47,8 @@ variable "instance_class" {
   default     = "db.t3.medium"
 }
 
+variable "backup_role_arn" {
+  description = "ARN del rol IAM usado por AWS Backup para gestionar respaldos del cluster RDS"
+  type        = string
+  nullable    = false
+}
