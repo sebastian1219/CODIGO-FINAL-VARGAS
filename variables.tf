@@ -52,6 +52,11 @@ variable "kubernetes_version" {
   nullable    = false
 }
 
+variable "log_bucket_name" {
+  description = "Nombre del bucket destino para almacenar logs de acceso"
+  type        = string
+}
+
 
 # 🔽 Variables necesarias para el módulo RDS (Aurora)
 variable "db_username" {
