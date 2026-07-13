@@ -29,11 +29,16 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      # 5. Linter de Terraform
-      - name: Run TFLint
-        uses: terraform-linters/tflint-action@v0.5.0
+      # 5. Instalar TFLint manualmente
+      - name: Install TFLint
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+          tflint --init
 
-      # 6. Escaneo de seguridad
+      - name: Run TFLint
+        run: tflint --recursive
+
+      # 6. Escaneo de seguridad con Checkov
       - name: Run Checkov
         uses: bridgecrewio/checkov-action@v12
 
