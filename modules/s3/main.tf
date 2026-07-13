@@ -140,6 +140,7 @@ resource "aws_s3_bucket_replication_configuration" "this" {
 # SNS Topic para notificaciones
 resource "aws_sns_topic" "s3_events" {
   name = "${var.environment}-s3-events"
+  kms_master_key_id = aws_kms_key.s3.arn
 }
 
 # Notificaciones de eventos
