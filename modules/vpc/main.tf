@@ -61,3 +61,8 @@ resource "aws_flow_log" "this" {
   vpc_id               = aws_vpc.this.id
 }
 
+resource "aws_cloudwatch_log_group" "vpc_logs" {
+  name              = "/aws/vpc/${var.environment}-flow-logs"
+  retention_in_days = 365
+  kms_key_id        = aws_kms_key.logs.arn
+}

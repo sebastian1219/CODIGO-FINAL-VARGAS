@@ -31,6 +31,9 @@ resource "aws_rds_cluster" "this" {
   db_subnet_group_name    = aws_db_subnet_group.this.name
   vpc_security_group_ids  = var.sg_ids   # SG de la misma VPC que subnet_ids
   skip_final_snapshot     = true
+  enabled_cloudwatch_logs_exports = ["postgresql", "error", "general", "slowquery"]
+}
+
 
   # Correcciones mínimas
   iam_database_authentication_enabled = true

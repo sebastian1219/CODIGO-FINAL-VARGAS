@@ -50,17 +50,13 @@ resource "aws_s3_bucket_logging" "this" {
 # Ciclo de vida mínimo (con filtro obligatorio)
 resource "aws_s3_bucket_lifecycle_configuration" "this" {
   bucket = aws_s3_bucket.this.id
-
   rule {
     id     = "expire-old-objects"
     status = "Enabled"
-
-    filter {
-      prefix = "" 
-    }
-
-    expiration {
-      days = 30
+    filter { prefix = "" }
+    expiration { days = 30 }
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
     }
   }
 }
