@@ -44,14 +44,4 @@ jobs:
         uses: bridgecrewio/checkov-action@v12
         continue-on-error: true
 
-      # 7. Generar plan (no aplica)
-      - name: Terraform Plan
-        run: terraform plan -input=false -refresh=false -lock=false
-
-      # 8. Guardar el plan como artefacto
-      - name: Upload Plan
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfplan
-          path: tfplan
-
+    
