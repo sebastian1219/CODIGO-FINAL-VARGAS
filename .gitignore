@@ -1,0 +1,18 @@
+# Archivos de Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+crash.log
+override.tf
+override.tf.json
+terraform.rc
+
+# Carpetas de Terraform
+.terraform/
+.terraform.lock.hcl
+
+# Archivos grandes o sensibles
+*.zip
+*.tar.gz
+*.log
