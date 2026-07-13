@@ -1,41 +1,50 @@
-name: Terraform CI/CD
+name: Terraform Validation
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
     steps:
+      # 1. Descargar el código
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 2. Instalar Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
+      # 3. Inicializar Terraform
       - name: Terraform Init
         run: terraform init
 
+      # 4. Validar sintaxis
       - name: Terraform Validate
         run: terraform validate
 
+      # 5. Linter de Terraform
       - name: Run TFLint
         uses: terraform-linters/tflint-action@v0.5.0
 
+      # 6. Escaneo de seguridad
       - name: Run Checkov
-        uses: bridgecrewio/checkov-action@master
+        uses: bridgecrewio/checkov-action@v12
 
+      # 7. Generar plan (no aplica)
       - name: Terraform Plan
         run: terraform plan -out=tfplan
 
+      # 8. Guardar el plan como artefacto
       - name: Upload Plan
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
           path: tfplan
 
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve tfplan
