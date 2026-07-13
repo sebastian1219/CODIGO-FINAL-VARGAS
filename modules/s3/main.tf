@@ -101,7 +101,27 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
   }
 }
 
-# Replicación entre regiones (requiere bucket destino y rol IAM)
+# Rol IAM para replicación
+resource "aws_iam_role" "replication" {
+  name = "${var.environment}-s3-replication-role"
+
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+POLICY
+}
+
+# Replicación entre regiones
 resource "aws_s3_bucket_replication_configuration" "this" {
   bucket = aws_s3_bucket.this.id
   role   = aws_iam_role.replication.arn
@@ -117,7 +137,12 @@ resource "aws_s3_bucket_replication_configuration" "this" {
   }
 }
 
-# Notificaciones de eventos (ejemplo con SNS)
+# SNS Topic para notificaciones
+resource "aws_sns_topic" "s3_events" {
+  name = "${var.environment}-s3-events"
+}
+
+# Notificaciones de eventos
 resource "aws_s3_bucket_notification" "this" {
   bucket = aws_s3_bucket.this.id
 
