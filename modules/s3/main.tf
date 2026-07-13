@@ -12,11 +12,13 @@ terraform {
 # S3 Bucket
 resource "aws_s3_bucket" "this" {
   bucket = var.bucket_name
+  log_bucket_name = var.log_bucket_name
 
   tags = {
     Name        = "${var.environment}-s3"
     Environment = var.environment
   }
+
 }
 
 # Bloqueo de acceso público
