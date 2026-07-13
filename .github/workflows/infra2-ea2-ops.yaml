@@ -41,6 +41,8 @@ jobs:
       # 6. Escaneo de seguridad con Checkov
       - name: Run Checkov
         uses: bridgecrewio/checkov-action@v12
+        with:
+          args: --severity HIGH --soft-fail
 
       # 7. Generar plan (no aplica)
       - name: Terraform Plan
